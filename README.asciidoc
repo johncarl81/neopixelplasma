@@ -1,0 +1,3 @@
+= Arduino NeoPixel Plasma
+
+Displays multicolor plasma on the NeoPixel shield.
