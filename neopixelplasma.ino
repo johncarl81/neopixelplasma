@@ -25,8 +25,13 @@
 //   NEO_GRB     Pixels are wired for GRB bitstream
 //   NEO_KHZ400  400 KHz bitstream (e.g. FLORA pixels)
 //   NEO_KHZ800  800 KHz bitstream (e.g. High Density LED strip)
-const int NUM_LEDS = 40;
+const int ROWS = 5;
+const int COLS = 8;
+const int NUM_LEDS = ROWS * COLS;
 const int LED_PIN = 6;
+const float phaseIncrement = 0.03;  // Controls the speed of the moving points. Higher == faster. I like 0.08 .
+const float colorStretch = 0.3;    // Higher numbers will produce tighter color bands. I like 0.11 .
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // Convenient 2D point structure
@@ -35,15 +40,12 @@ struct Point {
   float y;
 };
 
-
-float phase = 0.0;
-float phaseIncrement = 0.03;  // Controls the speed of the moving points. Higher == faster. I like 0.08 .
-float colorStretch = 0.3;    // Higher numbers will produce tighter color bands. I like 0.11 .
-
 void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 }
+
+float phase = 0.0;
 
 // This function is called every frame.
 void loop() {
@@ -60,11 +62,11 @@ void loop() {
   byte row, col;
   
   // For each row...
-  for( row=0; row<5; row++ ) {
+  for( row=0; row<ROWS; row++ ) {
     float row_f = float(row);  // Optimization: Keep a floating point value of the row number, instead of recasting it repeatedly.
     
     // For each column...
-    for( col=0; col<8; col++ ) {
+    for( col=0; col<COLS; col++ ) {
       float col_f = float(col);  // Optimization.
       
       // Calculate the distance between this LED, and p1.
@@ -93,8 +95,7 @@ void loop() {
       color_4 *= color_4;
  
       // Scale the color up to 0..7 . Max brightness is 7.
-      //strip.setPixelColor(col + (8 * row), strip.Color(color_4, 0, 0) );
-      strip.setPixelColor(col + (8 * row), strip.Color(color_1, color_2, color_3));
+      strip.setPixelColor(col + (COLS * row), strip.Color(color_1, color_2, color_3));
     }
   }
   strip.show();
